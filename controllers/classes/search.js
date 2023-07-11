@@ -1,6 +1,8 @@
 import fsPromises from 'fs/promises'
 import puppeteer from 'puppeteer'
 import JSON2CSVParser from 'json2csv/lib/JSON2CSVParser.js'
+import chalk from "chalk"
+
 export default class Search{
 
     constructor(scrollCount, email, password){
@@ -10,6 +12,7 @@ export default class Search{
     }
     
     main = async (duplicates) => {
+        console.log(chalk.yellow("Starting Puppeteer..."))
         this.browser = await puppeteer.launch({
             headless: 1,
             args: [
@@ -31,7 +34,7 @@ export default class Search{
         await page.setViewport({ width: 1200, height: 800 });
         // bypass facebook login
         await page.goto('https://www.facebook.com/marketplace/category/cars', { waitUntil: 'networkidle2' });
-        console.log("Authentication in progress...")
+        console.log(chalk.yellow("Authentication in progress..."))
         const cookieButton = await page.$x('/html/body/div[3]/div[2]/div/div/div/div/div[4]/button[1]')
         cookieButton[0]?.click()
         // wait for Facebook login form
@@ -42,7 +45,7 @@ export default class Search{
         await page.evaluate((val) => email.value = val, this.email);
         await page.evaluate((val) => pass.value = val, this.password);
         await page.evaluate(selector => document.querySelector(selector).click(), 'input[value="Log In"],#loginbutton');
-        console.log('Login completed')
+        console.log(chalk.green('Login completed'))
         await page.waitForNavigation({waitUntil: 'networkidle2'});
         
         // Analizziamo ogni annuncio
@@ -80,7 +83,7 @@ export default class Search{
             catch(err){
             }
         }
-        await this.convertToCSV(carData, "results")
+/*         await this.convertToCSV(carData, "results") */
         await this.browser.close()
         return carData
     }
@@ -147,7 +150,7 @@ export default class Search{
         let user_name = await page.evaluate(el => el.textContent, elHandler[0]);
         let user_id = (await page.evaluate(el => el.href, elHandler[0])).split("/")[5];
         page.close()
-        console.log("Element evaluated")
+        console.log(chalk.green("Grabbed username:"), user_name)
         return {user_id, user_name}
     }
 }

@@ -2,21 +2,26 @@ import Search from './classes/search.js'
 import mysql from 'mysql'
 import util from 'util'
 import dotenv from 'dotenv'
+import chalk from "chalk";
 dotenv.config()
-const search = new Search(5, process.env.FACEBOOK_EMAIL, process.env.FACEBOOK_PASSWORD)
+const search = new Search(2, process.env.FACEBOOK_EMAIL, process.env.FACEBOOK_PASSWORD)
+
 const db = mysql.createConnection({
   host : process.env.DB_HOST,
+  port: process.env.DB_PORT,
   user : process.env.DB_USER,
   password : process.env.DB_PASSWORD,
   database : process.env.DB_NAME
 });
 
+
 export default async function Scraper() {
+  console.log(chalk.bgYellowBright("🏁 Starting Facebook Web Scraper!"));
   try{
     db.connect()
   }
   catch (err){
-    console.log(err)
+    console.log(chalk.redBright("❌ Database Connection Failed..."),err)
     return 0
   }
   const query = util.promisify(db.query).bind(db)
@@ -32,18 +37,17 @@ export default async function Scraper() {
       console.log(`Element ${car.subject} added to database`)
     }
     catch (err) {
-      console.log("Unable to add current item")
+      console.log(chalk.bgRedBright("❌ Unable to add current item"))
       failures++
     }
 
   }
   console.log(`${data.length - failures} out of ${data.length} were added successfully to the database`)
-  try {
-    await query('DELETE FROM `cars_facebook` WHERE `date_remote` > ?', [new Date(new Date().getTime() + 30 * 24 * 60 * 60 * 1000)])
+/*   try {
+    await query('DELETE FROM `cars_facebook` WHERE `date_remote` <= ?', [new Date(new Date().getTime() - 60 * 24 * 60 * 60 * 1000 + 1)])
     console.log("Database was updated successfully")
   }
   catch (err) {
     console.log(err)
-  }
+  } */
 }
-
