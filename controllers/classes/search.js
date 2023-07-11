@@ -13,19 +13,7 @@ export default class Search{
     
     main = async (duplicates) => {
         console.log(chalk.yellow("Starting Puppeteer..."))
-        this.browser = await puppeteer.launch({
-            headless: 1,
-            args: [
-              "--disable-setuid-sandbox",
-              "--no-sandbox",
-              "--single-process",
-              "--no-zygote",
-            ],
-            executablePath:
-              process.env.NODE_ENV === "production"
-                ? process.env.PUPPETEER_EXECUTABLE_PATH
-                : puppeteer.executablePath(),
-          });
+        this.browser = await puppeteer.launch({ headless: "new" });
         this.page = await this.browser.newPage();
         const page = this.page
         const client = await page.target().createCDPSession();
