@@ -33,6 +33,10 @@ app.get("/facebook", (req, res) => {
     res.status(200).json({ welcome_message: "Facebook Scraper v1.0.0" });
 });
 
+app.get("/", (req, res) => {
+    res.status(200).json({ welcome_message: "/ Facebook Scraper v1.0.0" });
+});
+
 //Messaggio di avvio del server
 const connection = app.listen(PORT, () => {
   console.log(
