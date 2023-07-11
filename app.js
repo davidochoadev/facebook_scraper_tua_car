@@ -1,10 +1,13 @@
 import express from "express";
 import Scraper from "./controllers/searchController.js";
 import DeleteOldRecords from "./controllers/deleteController.js";
+import cors from 'cors';
+import corsOptions from "./config/corsOptions.js";
 import chalk from "chalk";
 
 const app = express();
 app.use(express.json());
+app.use(cors(corsOptions));
 
 const PORT = process.env.PORT || 8000;
 
