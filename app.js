@@ -4,6 +4,7 @@ import DeleteOldRecords from "./controllers/deleteController.js";
 import chalk from "chalk";
 
 const app = express();
+app.use(express.json());
 
 const PORT = process.env.PORT || 8000;
 
@@ -25,8 +26,8 @@ app.get("/remove", async (req, res) => {
     }
 });
 
-app.get("/", (req, res) => {
-  res.send("Facebook Scraper Server is Up and Running");
+app.get("/facebook", (req, res) => {
+    res.status(200).json({ welcome_message: "Facebook Scraper v1.0.0" });
 });
 
 //Messaggio di avvio del server
