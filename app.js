@@ -5,7 +5,7 @@ import chalk from "chalk";
 
 const app = express();
 
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 8000;
 
 app.get("/scraper", async (req, res) => {
   try {
