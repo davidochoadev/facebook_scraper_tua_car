@@ -16,7 +16,7 @@ app.get("/scraper", async (req, res) => {
     await Scraper();
     res.status(200).json({ success: "✅ Successfully completed the Scraping Process on Facebook!" });
   } catch (error) {
-    res.status(500).json({ error: "❌ An error occurred during the Scraping Process." }, error);
+    res.status(500).json({ wrong: "❌ An error occurred during the Scraping Process." }, error);
   }
 });
 
