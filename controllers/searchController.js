@@ -42,7 +42,7 @@ export default async function Scraper() {
     }
 
   }
-  console.log(`${data.length - failures} out of ${data.length} were added successfully to the database`)
+  return (`${data.length - failures} out of ${data.length} were added successfully to the database`)
 /*   try {
     await query('DELETE FROM `cars_facebook` WHERE `date_remote` <= ?', [new Date(new Date().getTime() - 60 * 24 * 60 * 60 * 1000 + 1)])
     console.log("Database was updated successfully")
