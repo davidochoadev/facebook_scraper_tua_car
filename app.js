@@ -1,5 +1,5 @@
 import express from "express";
-import Scraper from "./controllers/searchController.js";
+import { scraper } from "./controllers/searchController.js";
 import DeleteOldRecords from "./controllers/deleteController.js";
 import cors from 'cors';
 import corsOptions from "./config/corsOptions.js";
@@ -10,6 +10,8 @@ app.use(express.json());
 app.use(cors(corsOptions));
 
 const PORT = process.env.PORT || 8000;
+
+app.get("/facebook", scraper);
 
 app.get("/scraper", async (req, res) => {
   try {
@@ -27,10 +29,6 @@ app.get("/remove", async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: "❌ An error occurred during the Delete Process." });
     }
-});
-
-app.get("/facebook", (req, res) => {
-    res.status(200).json({ welcome_message: "Facebook Scraper v1.0.0" });
 });
 
 app.get("/", (req, res) => {

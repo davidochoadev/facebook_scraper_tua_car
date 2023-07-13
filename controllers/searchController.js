@@ -14,8 +14,7 @@ const db = mysql.createConnection({
   database : process.env.DB_NAME
 });
 
-
-export default async function Scraper() {
+export const scraper = async (req,res) => {
   console.log(chalk.bgYellowBright("🏁 Starting Facebook Web Scraper!"));
   try{
     db.connect()
@@ -43,6 +42,11 @@ export default async function Scraper() {
 
   }
   return (`${data.length - failures} out of ${data.length} were added successfully to the database`)
+}
+
+
+export default async function Scraper() {
+
 /*   try {
     await query('DELETE FROM `cars_facebook` WHERE `date_remote` <= ?', [new Date(new Date().getTime() - 60 * 24 * 60 * 60 * 1000 + 1)])
     console.log("Database was updated successfully")
