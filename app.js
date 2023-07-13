@@ -13,14 +13,14 @@ const PORT = process.env.PORT || 8000;
 
 app.get("/facebook", scraper);
 
-app.get("/scraper", async (req, res) => {
+/* app.get("/scraper", async (req, res) => {
   try {
     const res = await Scraper();
     res.status(200).json({ success: "✅ Successfully completed the Scraping Process on Facebook!" }, res );
   } catch (error) {
     res.status(500).json({ wrong: "❌ An error occurred during the Scraping Process." }, error);
   }
-});
+}); */
 
 app.get("/remove", async (req, res) => {
     try {
