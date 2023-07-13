@@ -21,8 +21,8 @@ export const scraper = async (req,res) => {
     const query = util.promisify(db.query).bind(db);
     const duplicates = await query('SELECT `urn` FROM `cars_facebook` WHERE 1');
     console.log("Got the following duplicates number: " + duplicates.length);
-    const data = await search.main(duplicates);
-    res.status(200).json({ successful : `✅  ${data.length - failures} out of ${data.length} were added successfully to the database`, data});
+/*     const data = await search.main(duplicates); */
+    res.status(200).json({ successful : `✅ ${duplicates.length}`});
   }
   catch (err){
     console.log(chalk.redBright("❌ Database Connection Failed..."),err)
