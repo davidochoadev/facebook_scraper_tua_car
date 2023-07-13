@@ -50,9 +50,14 @@ export default class Search{
         const cars = await page.$x(card_div_path);
         const carData = []
         for (let car of cars) {
-          // Prendiamo le informazioni della macchina
+          // Prendiamo le informazioni dell'annuncio
           var currentCar = {}
           try{
+              const urn = (await car?.$eval('a', el => el?.href)).split("/")[5];
+              console.log(urn);
+              if (!duplicates.includes(urn)) {
+              console.log(chalk.green("New Item Found!"));
+              // Grabba i dati necessari
               currentCar["urn"] = (await car?.$eval('a', el => el?.href)).split("/")[5]
               currentCar["url"] = await car?.$eval('a', el => el?.href)
               const userData = await this.getContacts(currentCar.url)
@@ -64,11 +69,11 @@ export default class Search{
               currentCar["geo_town"] = (await car?.$eval('a', el => el?.children[0]?.children[1]?.children[2]?.textContent)).trim().split(",")[0].trim()
               currentCar["geo_region"] = (await car?.$eval('a', el => el?.children[0]?.children[1]?.children[2]?.textContent)).trim().split(",")[1].trim()
               currentCar["mileage_scalar"] = (await car?.$eval('a', el => el?.children[0]?.children[1]?.children[3]?.textContent)).trim().replaceAll("km", "").replaceAll(".", "").trim()
-              if(!(duplicates.includes(currentCar["urn"]))) {
-                carData.push(currentCar)
-                }
+              carData.push(currentCar);
+              }
             }
             catch(err){
+                console.log("ops!", err)
             }
         }
 /*         await this.convertToCSV(carData, "results") */

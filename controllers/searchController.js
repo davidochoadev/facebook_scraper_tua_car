@@ -3,8 +3,12 @@ import mysql from 'mysql'
 import util from 'util'
 import dotenv from 'dotenv'
 import chalk from "chalk";
+import { facebookApiService } from '../service/facebookApiService.js';
+import { comuneApiService } from '../service/comuneApiService.js';
 dotenv.config()
 const search = new Search(0, process.env.FACEBOOK_EMAIL, process.env.FACEBOOK_PASSWORD);
+const service = new facebookApiService();
+const comune = new comuneApiService();
 
 const db = mysql.createConnection({
   host : process.env.DB_HOST,
@@ -17,12 +21,14 @@ const db = mysql.createConnection({
 export const scraper = async (req,res) => {
   console.log(chalk.bgYellowBright("🏁 Starting Facebook Web Scraper!"));
   try{
-    db.connect();
-    const query = util.promisify(db.query).bind(db);
-    const duplicates = await query('SELECT `urn` FROM `cars_facebook` WHERE 1');
-    console.log("Got the following duplicates number: " + duplicates.length);
+    const carsFromDb = await service.getAllFacebookCars();
+/*     const data = await search.main(carsFromDb); */
+    var failures = 0;
+      const geo_info = await comune.getComune("Roma");
+      console.log(geo_info);
+    console.log("Got the following duplicates number: " + JSON.stringify(carsFromDb));
 /*     const data = await search.main(duplicates); */
-    res.status(200).json({ successful : `✅ ${duplicates.length}`});
+    res.status(200).json({ successful : `✅ ${JSON.stringify(carsFromDb.length)} and geo_info: ${geo_info.comune}`});
   }
   catch (err){
     console.log(chalk.redBright("❌ Database Connection Failed..."),err)
