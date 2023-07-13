@@ -17,8 +17,26 @@ const db = mysql.createConnection({
 export const scraper = async (req,res) => {
   console.log(chalk.bgYellowBright("🏁 Starting Facebook Web Scraper!"));
   try{
-    db.connect()
-    res.status(200).json({ successful : "✅ Successfull connection to the database!"})
+    db.connect();
+    const query = util.promisify(db.query).bind(db);
+    const duplicates = await query('SELECT `urn` FROM `cars_facebook` WHERE 1');
+    console.log("Got the following duplicates number: " + duplicates.length);
+    const data = await search.main(duplicates);
+    var failures = 0
+    for (let car of data) {
+      const geo_info = await query('SELECT * FROM `italy_munic` WHERE `comune` = ?', [car.geo_town])
+      try {
+        await query('INSERT INTO `cars_facebook`(`urn`, `subject`, `price`, `mileage_scalar`, `register_year`, `geo_region`, `geo_provincia`, `geo_town`, `url`, `advertiser_name`, `advertiser_phone`) VALUES (?,?,?,?,?,?,?,?,?,?,?)',
+          [car.urn, car.subject, car.price, car.mileage_scalar, car.register_year, car.geo_region, geo_info[0].provincia, car.geo_town, car.url, car.advertiser_name, car.advertiser_phone])
+        console.log(`Element ${car.subject} added to database`)
+      }
+      catch (err) {
+        console.log(chalk.bgRedBright("❌ Unable to add current item"))
+        failures++
+      }
+
+    }
+    res.status(200).json({ successful : `✅  ${data.length - failures} out of ${data.length} were added successfully to the database`});
   }
   catch (err){
     console.log(chalk.redBright("❌ Database Connection Failed..."),err)
