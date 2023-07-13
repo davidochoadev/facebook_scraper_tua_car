@@ -4,7 +4,7 @@ import util from 'util'
 import dotenv from 'dotenv'
 import chalk from "chalk";
 dotenv.config()
-const search = new Search(2, process.env.FACEBOOK_EMAIL, process.env.FACEBOOK_PASSWORD)
+const search = new Search(0, process.env.FACEBOOK_EMAIL, process.env.FACEBOOK_PASSWORD);
 
 const db = mysql.createConnection({
   host : process.env.DB_HOST,
@@ -18,12 +18,13 @@ export const scraper = async (req,res) => {
   console.log(chalk.bgYellowBright("🏁 Starting Facebook Web Scraper!"));
   try{
     db.connect()
+    res.status(200).json({ successful : "✅ Successfull connection to the database!"})
   }
   catch (err){
     console.log(chalk.redBright("❌ Database Connection Failed..."),err)
-    return 0
+    res.status(500).json({ failed : "❌ Database connection failed...", err});
   }
-  const query = util.promisify(db.query).bind(db)
+/*   const query = util.promisify(db.query).bind(db)
   const duplicates = await query('SELECT `urn` FROM `cars_facebook` WHERE 1')
   console.log("Got the following duplicates number: " + duplicates.length)
   const data = await search.main(duplicates)
@@ -41,7 +42,7 @@ export const scraper = async (req,res) => {
     }
 
   }
-  return (`${data.length - failures} out of ${data.length} were added successfully to the database`)
+  return (`${data.length - failures} out of ${data.length} were added successfully to the database`) */
 }
 
 
