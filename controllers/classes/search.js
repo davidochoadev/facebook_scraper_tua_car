@@ -18,6 +18,10 @@ export default class Search{
         console.log(chalk.yellow("Starting Puppeteer..."))
         try{
         this.browser = await puppeteer.launch({ headless: !this.debugMode });
+        return {successfull: "Successfull Login!"}
+    } catch (err) {
+        return {error: "error!!!!!",err}
+    }
         this.page = await this.browser.newPage();
         const page = this.page
         const client = await page.target().createCDPSession();
@@ -37,10 +41,7 @@ export default class Search{
         await page.evaluate((val) => email.value = val, this.email);
         await page.evaluate((val) => pass.value = val, this.password);
         await page.evaluate(selector => document.querySelector(selector).click(), 'input[value="Log In"],#loginbutton');
-        return {successfull: "Successfull Login!"}
-        } catch (err) {
-            return {error: "error!!!!!",err}
-        }
+
         await page.waitForNavigation({waitUntil: 'networkidle2'});
         await page.goto(`https://www.facebook.com/marketplace/${location}/cars`);
         
