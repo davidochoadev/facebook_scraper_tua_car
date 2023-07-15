@@ -16,15 +16,8 @@ export default class Search{
     
     main = async (location) => {
         console.log(chalk.yellow("Starting Puppeteer..."))
-        try {
-        this.browser = await puppeteer.launch({ headless: "new" });
+        this.browser = await puppeteer.launch({ headless: !this.debugMode });
         this.page = await this.browser.newPage();
-        return {res: "pupeteer ok"};
-        } catch(err) {
-            return {error: err};
-        }
-        console.log(chalk.bgYellowBright("OK"));
-        return {res: "login complete"};
         const page = this.page
         const client = await page.target().createCDPSession();
         const context = this.browser.defaultBrowserContext();
@@ -86,10 +79,10 @@ export default class Search{
           // Prendiamo le informazioni dell'annuncio
           var currentCar = {}
           try{
-              const urn = (await car?.$eval('a', el => el?.href)).split("/")[5];
-              const available = await service.findUrnByUrn(urn);
+              /* const urn = (await car?.$eval('a', el => el?.href)).split("/")[5];
+              const available = await service.findUrnByUrn(urn); */
               /* !duplicates.includes(urn) */
-              if (available === null) {
+              /* if (available === null) { */
               console.log(chalk.green("New Item Found!"));
               // Grabba i dati necessari
               currentCar["urn"] = (await car?.$eval('a', el => el?.href)).split("/")[5];
@@ -104,12 +97,11 @@ export default class Search{
               currentCar["geo_region"] = (await car?.$eval('a', el => el?.children[0]?.children[1]?.children[2]?.textContent)).trim().split(",")[1].trim()
               currentCar["mileage_scalar"] = (await car?.$eval('a', el => el?.children[0]?.children[1]?.children[3]?.textContent)).trim().replaceAll("km", "").replaceAll(".", "").trim()
               carData.push(currentCar);
-              } else {
+/*               } else {
                 console.log(chalk.bgRed("Already Present in the Database"));
-              }
+              } */
             }
             catch(err){
-                return err
             }
         }
 /*         await this.convertToCSV(carData, "results") */
