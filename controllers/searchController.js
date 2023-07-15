@@ -20,18 +20,32 @@ const db = mysql.createConnection({
 
 export const scraper = async (req,res) => {
   console.log(chalk.bgYellowBright("🏁 Starting Facebook Web Scraper!"));
+  const location = req.query.location;
+  const search = new Search(0, process.env.FACEBOOK_EMAIL, process.env.FACEBOOK_PASSWORD);
   try{
     const carsFromDb = await service.getAllFacebookCars();
-/*     const data = await search.main(carsFromDb); */
+    console.log("Got the following duplicates number from db: " + JSON.stringify(carsFromDb.length));
+    const duplicates = carsFromDb.map(obj => obj.urn); 
+    const data = await search.main(duplicates, location);
     var failures = 0;
-      const geo_info = await comune.getComune("Roma");
-      console.log(geo_info);
-    console.log("Got the following duplicates number: " + JSON.stringify(carsFromDb));
+    var correct = 0;
+    for (let car of data) {
+      const geo_info = await comune.getComune(car.geo_town);
+      try {
+        await service.createFacebookCar(car.urn, car.subject, car.price, car.mileage_scalar, car.register_year, car.geo_region, geo_info.provincia, car.geo_town, car.url, car.advertiser_name, car.advertiser_phone);
+        console.log(`Element ${car.subject} added to database`);
+        correct++
+      }
+      catch (err) {
+        console.log(chalk.bgRedBright("❌ Unable to add current item"), err);
+        failures++
+      }
+    }
 /*     const data = await search.main(duplicates); */
-    res.status(200).json({ successful : `✅ ${JSON.stringify(carsFromDb.length)} and geo_info: ${geo_info.comune}`});
+    res.status(200).json({ successful : `✅ Created new ${correct} announcement from facebook on the database`});
   }
   catch (err){
-    console.log(chalk.redBright("❌ Database Connection Failed..."),err)
+    console.log(chalk.redBright("❌ Database Connection Failed..."),err);
     res.status(500).json({ failed : "❌ Database connection failed...", err});
   }
 /*   const query = util.promisify(db.query).bind(db)

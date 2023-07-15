@@ -35,15 +35,18 @@ export default class Search{
         await page.evaluate(selector => document.querySelector(selector).click(), 'input[value="Log In"],#loginbutton');
         console.log(chalk.green('Login completed'))
         await page.waitForNavigation({waitUntil: 'networkidle2'});
+        await page.goto('https://www.facebook.com/marketplace/turin/cars');
         
         // Analizziamo ogni annuncio
+
+        console.log("To milan!")
         await page.waitForSelector('div[aria-label="Raccolta di articoli di Marketplace"]')
         const card_div_path = '/html/body/div[1]/div/div[1]/div/div[3]/div/div/div/div[1]/div[1]/div[2]/div/div/div[5]/div/div[2]/div'
         console.log('Page downloaded')
         var count = this.scrollCount
         while( count > 0){
             await this.autoScroll()
-            await page.waitForNetworkIdle()
+            await page.waitForNetworkIdle({ timeout: 60000 })
             console.log(`Scroll number: ${this.scrollCount - count}`)
             count--
         }
@@ -54,7 +57,6 @@ export default class Search{
           var currentCar = {}
           try{
               const urn = (await car?.$eval('a', el => el?.href)).split("/")[5];
-              console.log(urn);
               if (!duplicates.includes(urn)) {
               console.log(chalk.green("New Item Found!"));
               // Grabba i dati necessari
@@ -67,13 +69,15 @@ export default class Search{
               currentCar["register_year"] = await car?.$eval('a', el => el?.children[0]?.children[1]?.children[1]?.textContent.slice(0,4))
               currentCar["subject"] = await car?.$eval('a', el => el?.children[0]?.children[1]?.children[1]?.textContent.slice(4).replace(" ", ""))
               currentCar["geo_town"] = (await car?.$eval('a', el => el?.children[0]?.children[1]?.children[2]?.textContent)).trim().split(",")[0].trim()
+              console.log(chalk.blue("Poizione è :"), (await car?.$eval('a', el => el?.children[0]?.children[1]?.children[2]?.textContent)).trim().split(",")[0].trim())
               currentCar["geo_region"] = (await car?.$eval('a', el => el?.children[0]?.children[1]?.children[2]?.textContent)).trim().split(",")[1].trim()
               currentCar["mileage_scalar"] = (await car?.$eval('a', el => el?.children[0]?.children[1]?.children[3]?.textContent)).trim().replaceAll("km", "").replaceAll(".", "").trim()
               carData.push(currentCar);
+              } else {
+                console.log(chalk.red("Already Present!"))
               }
             }
             catch(err){
-                console.log("ops!", err)
             }
         }
 /*         await this.convertToCSV(carData, "results") */
