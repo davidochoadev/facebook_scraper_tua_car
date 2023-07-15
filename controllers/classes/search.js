@@ -4,6 +4,7 @@ import JSON2CSVParser from 'json2csv/lib/JSON2CSVParser.js'
 import { facebookApiService } from '../../service/facebookApiService.js'
 import chalk from "chalk"
 import { type } from 'os'
+
 const service = new facebookApiService();
 
 export default class Search{
@@ -17,14 +18,7 @@ export default class Search{
 
     async launch() {
         try {
-          const browser = await puppeteer.launch({ headless: true });
-          const page = await browser.newPage();
-          
-          await page.goto('https://google.com'); // Open example.com
-      
-          // You can perform additional actions here, such as taking a screenshot or extracting data
-      
-          await browser.close();
+          await puppeteer.launch({ headless: true });
           return {success:'Puppeteer is working successfully!'};
         } catch (error) {
           return {error}
