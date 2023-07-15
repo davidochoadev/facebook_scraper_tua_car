@@ -18,10 +18,10 @@
     "file-saver": "^2.0.5",
     "json2csv": "^6.0.0-alpha.2",
     "mysql": "^2.18.1",
-    "nodemon": "^2.0.22",
     "puppeteer": "^19.7.2"
   },
   "devDependencies": {
+    "nodemon": "^2.0.22",
     "prisma": "^4.16.2"
   }
 }

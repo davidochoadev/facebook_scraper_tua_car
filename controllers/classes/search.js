@@ -14,10 +14,10 @@ export default class Search{
         this.password = password
     }
     
-    main = async (location) => {
+    async main (location){
         console.log(chalk.yellow("Starting Puppeteer..."))
         try{
-        const browser = await puppeteer.launch({ headless: !this.debugMode });
+        const browser = await puppeteer.launch({ headless: 0 });
         this.page = await browser.newPage();
         await this.browser.close();
         return {successfull: "Successfull Login!"}
