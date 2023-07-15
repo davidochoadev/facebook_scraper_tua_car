@@ -18,7 +18,7 @@ export default class Search{
 
     async launch() {
         try {
-          await puppeteer.launch({ headless: true });
+          await puppeteer.launch({headless: true, ignoreDefaultArgs: [], timeout: 3000});
           return {success:'Puppeteer is working successfully!'};
         } catch (error) {
           return {error}
