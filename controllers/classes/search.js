@@ -8,29 +8,17 @@ const service = new facebookApiService();
 
 export default class Search{
 
-    constructor(scrollCount, email, password){
+    constructor(scrollCount, email, password, debugMode=0){
         this.scrollCount = scrollCount
         this.email = email
         this.password = password
+        this.debugMode = debugMode
     }
     
     async main (location){
         console.log(chalk.yellow("Starting Puppeteer..."))
     try{
-        const browser = await puppeteer.launch({
-            headless: 1,
-            args: [
-              "--disable-setuid-sandbox",
-              "--no-sandbox",
-              "--single-process",
-              "--no-zygote",
-            ],
-            executablePath:
-              process.env.NODE_ENV === "production"
-                ? process.env.PUPPETEER_EXECUTABLE_PATH
-                : puppeteer.executablePath(),
-          });
-
+        const browser = await puppeteer.launch({ headless: !this.debugMode });
         this.page = await browser.newPage();
         await browser.close();
         return {successfull: "Successfull Login!"}
