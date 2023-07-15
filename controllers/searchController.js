@@ -32,7 +32,7 @@ export const scraper = async (req,res) => {
         failures++
       }
     } */
-    res.status(200).json({ successful : `✅ Created new ${correct} announcement from facebook on the database`}, data.length);
+    res.status(200).json({ successful : `✅ Created new ${correct} announcement from facebook on the database`}, data);
   }
   catch (err){
     console.log(chalk.redBright("❌ Database Connection Failed..."),err);
