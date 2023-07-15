@@ -32,7 +32,6 @@ export const scraper = async (req,res) => {
         failures++
       }
     } */
-/*     const data = await search.main(duplicates); */
     res.status(200).json({ successful : `✅ Created new ${correct} announcement from facebook on the database`}, data.length);
   }
   catch (err){
