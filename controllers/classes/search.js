@@ -21,7 +21,7 @@ export default class Search{
         this.page = await browser.newPage();
         await this.browser.close();
         return {successfull: "Successfull Login!"}
-    } catch (err) {
+    } catch (err) {
         return {error: "error!!!!!",err}
     }
         this.page = await browser.newPage();
