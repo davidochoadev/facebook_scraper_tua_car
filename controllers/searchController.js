@@ -5,11 +5,12 @@ import dotenv from 'dotenv'
 import chalk from "chalk";
 import { facebookApiService } from '../service/facebookApiService.js';
 import { comuneApiService } from '../service/comuneApiService.js';
-dotenv.config()
-const service = new facebookApiService();
-const comune = new comuneApiService();
+import "dotenv/config";
+
 
 export const scraper = async (req,res) => {
+  const service = new facebookApiService();
+  const comune = new comuneApiService();
   console.log(chalk.bgYellowBright("🏁 Starting Facebook Web Scraper!"));
   const location = req.query.location;
   const scrollCount = req.query.scroll_count || 0
