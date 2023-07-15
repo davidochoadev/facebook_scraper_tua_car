@@ -21,7 +21,9 @@ const db = mysql.createConnection({
 export const scraper = async (req,res) => {
   console.log(chalk.bgYellowBright("🏁 Starting Facebook Web Scraper!"));
   const location = req.query.location;
-  const search = new Search(0, process.env.FACEBOOK_EMAIL, process.env.FACEBOOK_PASSWORD);
+  const scrollCount = req.query.scroll_count || 0
+  console.log("Page is:", scrollCount)
+  const search = new Search(scrollCount, process.env.FACEBOOK_EMAIL, process.env.FACEBOOK_PASSWORD);
   try{
     const carsFromDb = await service.getAllFacebookCars();
     console.log("Got the following duplicates number from db: " + JSON.stringify(carsFromDb.length));

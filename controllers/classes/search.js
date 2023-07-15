@@ -2,6 +2,7 @@ import fsPromises from 'fs/promises'
 import puppeteer from 'puppeteer'
 import JSON2CSVParser from 'json2csv/lib/JSON2CSVParser.js'
 import chalk from "chalk"
+import { type } from 'os'
 
 export default class Search{
 
@@ -11,7 +12,7 @@ export default class Search{
         this.password = password
     }
     
-    main = async (duplicates) => {
+    main = async (duplicates, location) => {
         console.log(chalk.yellow("Starting Puppeteer..."))
         this.browser = await puppeteer.launch({ headless: "new" });
         this.page = await this.browser.newPage();
@@ -35,18 +36,33 @@ export default class Search{
         await page.evaluate(selector => document.querySelector(selector).click(), 'input[value="Log In"],#loginbutton');
         console.log(chalk.green('Login completed'))
         await page.waitForNavigation({waitUntil: 'networkidle2'});
-        await page.goto('https://www.facebook.com/marketplace/turin/cars');
+        await page.goto(`https://www.facebook.com/marketplace/${location}/cars`);
         
         // Analizziamo ogni annuncio
 
-        console.log("To milan!")
+        console.log(`To ${location}!`);
         await page.waitForSelector('div[aria-label="Raccolta di articoli di Marketplace"]')
         const card_div_path = '/html/body/div[1]/div/div[1]/div/div[3]/div/div/div/div[1]/div[1]/div[2]/div/div/div[5]/div/div[2]/div'
-        console.log('Page downloaded')
-        var count = this.scrollCount
+        console.log('Page downloaded',typeof(this.scrollCount));
+        var count = parseInt(this.scrollCount);
         while( count > 0){
-            await this.autoScroll()
-            await page.waitForNetworkIdle({ timeout: 60000 })
+            await this.page.evaluate(() => {
+                return new Promise((resolve, reject) => {
+                  var totalHeight = 0;
+                  var distance = window.innerHeight;
+                  var timer = setInterval(() => {
+                    var scrollHeight = document.body.scrollHeight;
+                    window.scrollBy(0, distance);
+                    totalHeight += distance;
+            
+                    if (totalHeight >= scrollHeight) {
+                      clearInterval(timer);
+                      resolve();
+                    }
+                  }, 100);
+                });
+              });
+            await page.waitForNetworkIdle({ timeout: 120000 })
             console.log(`Scroll number: ${this.scrollCount - count}`)
             count--
         }
