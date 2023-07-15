@@ -19,7 +19,7 @@
     "json2csv": "^6.0.0-alpha.2",
     "mysql": "^2.18.1",
     "nodemon": "^2.0.22",
-    "puppeteer": "^20.1.0"
+    "puppeteer": "^19.7.2"
   },
   "devDependencies": {
     "prisma": "^4.16.2"

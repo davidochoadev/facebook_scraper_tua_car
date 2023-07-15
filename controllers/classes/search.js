@@ -16,6 +16,7 @@ export default class Search{
     
     main = async (location) => {
         console.log(chalk.yellow("Starting Puppeteer..."))
+        try{
         this.browser = await puppeteer.launch({ headless: !this.debugMode });
         this.page = await this.browser.newPage();
         const page = this.page
@@ -25,7 +26,7 @@ export default class Search{
         await page.setViewport({ width: 1200, height: 800 });
         // bypass facebook login
         await page.goto('https://www.facebook.com/marketplace/category/cars', { waitUntil: 'networkidle2' });
-        console.log(chalk.yellow("Authentication in progress..."))
+        console.log(chalk.yellow("Authentication in progress..."));
         const cookieButton = await page.$x('/html/body/div[3]/div[2]/div/div/div/div/div[4]/button[1]')
         cookieButton[0]?.click()
         // wait for Facebook login form
@@ -36,6 +37,10 @@ export default class Search{
         await page.evaluate((val) => email.value = val, this.email);
         await page.evaluate((val) => pass.value = val, this.password);
         await page.evaluate(selector => document.querySelector(selector).click(), 'input[value="Log In"],#loginbutton');
+        return {successfull: "Successfull Login!"}
+        } catch (err) {
+            return {error: err}
+        }
         await page.waitForNavigation({waitUntil: 'networkidle2'});
         await page.goto(`https://www.facebook.com/marketplace/${location}/cars`);
         
@@ -79,10 +84,10 @@ export default class Search{
           // Prendiamo le informazioni dell'annuncio
           var currentCar = {}
           try{
-              /* const urn = (await car?.$eval('a', el => el?.href)).split("/")[5];
-              const available = await service.findUrnByUrn(urn); */
+              const urn = (await car?.$eval('a', el => el?.href)).split("/")[5];
+              const available = await service.findUrnByUrn(urn);
               /* !duplicates.includes(urn) */
-              /* if (available === null) { */
+              if (available === null) {
               console.log(chalk.green("New Item Found!"));
               // Grabba i dati necessari
               currentCar["urn"] = (await car?.$eval('a', el => el?.href)).split("/")[5];
@@ -97,9 +102,9 @@ export default class Search{
               currentCar["geo_region"] = (await car?.$eval('a', el => el?.children[0]?.children[1]?.children[2]?.textContent)).trim().split(",")[1].trim()
               currentCar["mileage_scalar"] = (await car?.$eval('a', el => el?.children[0]?.children[1]?.children[3]?.textContent)).trim().replaceAll("km", "").replaceAll(".", "").trim()
               carData.push(currentCar);
-/*               } else {
+              } else {
                 console.log(chalk.bgRed("Already Present in the Database"));
-              } */
+              }
             }
             catch(err){
             }
