@@ -16,7 +16,7 @@ export const scraper = async (req,res) => {
   console.log("Page is:", scrollCount)
   const search = new Search(parseInt(scrollCount), process.env.FACEBOOK_EMAIL, process.env.FACEBOOK_PASSWORD);
   try{
-/*     const data = await search.main(location); */
+    const data = await search.main(location);
     var failures = 0;
     var correct = 0;
 /*     for (let car of data) {
@@ -33,7 +33,7 @@ export const scraper = async (req,res) => {
       }
     } */
 /*     const data = await search.main(duplicates); */
-    res.status(200).json({ successful : `✅ Created new ${correct} announcement from facebook on the database`});
+    res.status(200).json({ successful : `✅ Created new ${correct} announcement from facebook on the database`}, data.length);
   }
   catch (err){
     console.log(chalk.redBright("❌ Database Connection Failed..."),err);

@@ -14,7 +14,7 @@ export default class Search{
         this.password = password
     }
     
-    main = async (duplicates, location) => {
+    main = async (location) => {
         console.log(chalk.yellow("Starting Puppeteer..."))
         this.browser = await puppeteer.launch({ headless: "new" });
         this.page = await this.browser.newPage();
@@ -103,6 +103,7 @@ export default class Search{
               }
             }
             catch(err){
+                return err
             }
         }
 /*         await this.convertToCSV(carData, "results") */
