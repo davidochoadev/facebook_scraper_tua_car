@@ -12,11 +12,13 @@ export default class Test {
 
   async launch() {
     try {
-      await puppeteer.launch({
+      const browser = await puppeteer.launch({
         headless: true,
         ignoreDefaultArgs: [],
         timeout: 3000,
       });
+      this.page = await browser.newPage();
+      await browser.close();
       return { success: "Puppeteer is working successfully!" };
     } catch (error) {
       return { error };
