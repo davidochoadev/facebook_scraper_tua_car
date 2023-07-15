@@ -1,5 +1,5 @@
 import express from "express";
-import { scraper } from "./controllers/searchController.js";
+import { scraper, test } from "./controllers/searchController.js";
 import DeleteOldRecords from "./controllers/deleteController.js";
 import cors from 'cors';
 import corsOptions from "./config/corsOptions.js";
@@ -12,6 +12,7 @@ app.use(cors(corsOptions));
 const PORT = process.env.PORT || 8000;
 
 app.get("/facebook", scraper);
+app.get("/test", test );
 
 /* app.get("/scraper", async (req, res) => {
   try {

@@ -16,10 +16,13 @@ export const scraper = async (req,res) => {
   console.log("Page is:", scrollCount)
   const search = new Search(parseInt(scrollCount), process.env.FACEBOOK_EMAIL, process.env.FACEBOOK_PASSWORD);
   try{
-    const data = await search.main(location);
+    const carsFromDb = await service.getAllFacebookCars();
+    console.log("Got the following duplicates number from db: " + JSON.stringify(carsFromDb.length));
+    const duplicates = carsFromDb.map(obj => obj.urn); 
+    const data = await search.main(duplicates, location);
     var failures = 0;
     var correct = 0;
-/*     for (let car of data) {
+    for (let car of data) {
       const geo_info = await comune.getComune(car.geo_town) || "";
       
       try {
@@ -31,8 +34,9 @@ export const scraper = async (req,res) => {
         console.log(chalk.bgRedBright("❌ Unable to add current item"), err);
         failures++
       }
-    } */
-    res.status(200).json({ successful : `✅ Created new ${correct} announcement from facebook on the database`, data});
+    }
+/*     const data = await search.main(duplicates); */
+    res.status(200).json({ successful : `✅ Created new ${correct} announcement from facebook on the database`});
   }
   catch (err){
     console.log(chalk.redBright("❌ Database Connection Failed..."),err);
@@ -59,6 +63,15 @@ export const scraper = async (req,res) => {
   return (`${data.length - failures} out of ${data.length} were added successfully to the database`) */
 }
 
+export const test = async (req,res) => {
+  try {
+    const search = new Search(parseInt(scrollCount), process.env.FACEBOOK_EMAIL, process.env.FACEBOOK_PASSWORD, 0);
+    const data = await search.launch();
+    res.status(200).json({ok: "test is working!", data});
+  }catch(err) {
+    res.status(500).json({ failed : "❌ Test is not working...", err});
+  }
+}
 
 export default async function Scraper() {
 

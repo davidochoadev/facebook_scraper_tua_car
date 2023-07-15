@@ -14,16 +14,28 @@ export default class Search{
         this.password = password
         this.debugMode = debugMode
     }
+
+    async launch() {
+        try {
+          const browser = await puppeteer.launch({ headless: !this.debugMode });
+          const page = await browser.newPage();
+          
+          await page.goto('https://google.com'); // Open example.com
+      
+          // You can perform additional actions here, such as taking a screenshot or extracting data
+      
+          await browser.close();
+          return {success:'Puppeteer is working successfully!'};
+        } catch (error) {
+          return {error}
+        }
+      }
+      
     
-    async main (location){
+    main = async (location) => {
         console.log(chalk.yellow("Starting Puppeteer..."))
-    try{
-        await puppeteer.launch({ headless: !this.debugMode });
-        return {successfull: "Successfull Login!"}
-    } catch (err) {
-          return { error: "An error occurred!", err };
-    }
-        this.page = await browser.newPage();
+        this.browser = await puppeteer.launch({ headless: !this.debugMode });
+        this.page = await this.browser.newPage();
         const page = this.page
         const client = await page.target().createCDPSession();
         const context = this.browser.defaultBrowserContext();
@@ -31,7 +43,7 @@ export default class Search{
         await page.setViewport({ width: 1200, height: 800 });
         // bypass facebook login
         await page.goto('https://www.facebook.com/marketplace/category/cars', { waitUntil: 'networkidle2' });
-        console.log(chalk.yellow("Authentication in progress..."));
+        console.log(chalk.yellow("Authentication in progress..."))
         const cookieButton = await page.$x('/html/body/div[3]/div[2]/div/div/div/div/div[4]/button[1]')
         cookieButton[0]?.click()
         // wait for Facebook login form
@@ -42,7 +54,6 @@ export default class Search{
         await page.evaluate((val) => email.value = val, this.email);
         await page.evaluate((val) => pass.value = val, this.password);
         await page.evaluate(selector => document.querySelector(selector).click(), 'input[value="Log In"],#loginbutton');
-
         await page.waitForNavigation({waitUntil: 'networkidle2'});
         await page.goto(`https://www.facebook.com/marketplace/${location}/cars`);
         
