@@ -17,7 +17,7 @@ export default class Search{
 
     async launch() {
         try {
-          const browser = await puppeteer.launch({ headless: !this.debugMode });
+          const browser = await puppeteer.launch({ headless: true });
           const page = await browser.newPage();
           
           await page.goto('https://google.com'); // Open example.com
