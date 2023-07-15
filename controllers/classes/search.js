@@ -36,6 +36,7 @@ export default class Search{
         await page.evaluate((val) => email.value = val, this.email);
         await page.evaluate((val) => pass.value = val, this.password);
         await page.evaluate(selector => document.querySelector(selector).click(), 'input[value="Log In"],#loginbutton');
+        console.log(chalk.bgGreenBright("Login Completed!"));
         return {res: "login complete"};
         await page.waitForNavigation({waitUntil: 'networkidle2'});
         await page.goto(`https://www.facebook.com/marketplace/${location}/cars`);
