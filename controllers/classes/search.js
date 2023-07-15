@@ -39,7 +39,7 @@ export default class Search{
         await page.evaluate(selector => document.querySelector(selector).click(), 'input[value="Log In"],#loginbutton');
         return {successfull: "Successfull Login!"}
         } catch (err) {
-            return {error: err}
+            return {error: "error!!!!!",err}
         }
         await page.waitForNavigation({waitUntil: 'networkidle2'});
         await page.goto(`https://www.facebook.com/marketplace/${location}/cars`);
