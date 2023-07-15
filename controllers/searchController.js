@@ -9,14 +9,6 @@ dotenv.config()
 const service = new facebookApiService();
 const comune = new comuneApiService();
 
-const db = mysql.createConnection({
-  host : process.env.DB_HOST,
-  port: process.env.DB_PORT,
-  user : process.env.DB_USER,
-  password : process.env.DB_PASSWORD,
-  database : process.env.DB_NAME
-});
-
 export const scraper = async (req,res) => {
   console.log(chalk.bgYellowBright("🏁 Starting Facebook Web Scraper!"));
   const location = req.query.location;
@@ -24,13 +16,10 @@ export const scraper = async (req,res) => {
   console.log("Page is:", scrollCount)
   const search = new Search(parseInt(scrollCount), process.env.FACEBOOK_EMAIL, process.env.FACEBOOK_PASSWORD);
   try{
-    const carsFromDb = await service.getAllFacebookCars();
-    console.log("Got the following duplicates number from db: " + JSON.stringify(carsFromDb.length));
-    const duplicates = carsFromDb.map(obj => obj.urn); 
-    const data = await search.main(duplicates, location);
+/*     const data = await search.main(location); */
     var failures = 0;
     var correct = 0;
-    for (let car of data) {
+/*     for (let car of data) {
       const geo_info = await comune.getComune(car.geo_town) || "";
       
       try {
@@ -42,7 +31,7 @@ export const scraper = async (req,res) => {
         console.log(chalk.bgRedBright("❌ Unable to add current item"), err);
         failures++
       }
-    }
+    } */
 /*     const data = await search.main(duplicates); */
     res.status(200).json({ successful : `✅ Created new ${correct} announcement from facebook on the database`});
   }
