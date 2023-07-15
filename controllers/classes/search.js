@@ -16,8 +16,12 @@ export default class Search{
     
     main = async (location) => {
         console.log(chalk.yellow("Starting Puppeteer..."))
+        try {
         this.browser = await puppeteer.launch({ headless: "new" });
         this.page = await this.browser.newPage();
+        } catch(err) {
+            return err;
+        }
         console.log(chalk.bgYellowBright("OK"));
         return {res: "login complete"};
         const page = this.page
