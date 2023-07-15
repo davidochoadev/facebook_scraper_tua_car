@@ -17,7 +17,20 @@ export default class Search{
     async main (location){
         console.log(chalk.yellow("Starting Puppeteer..."))
     try{
-        const browser = await puppeteer.launch({ headless: true });
+        const browser = await puppeteer.launch({
+            headless: 1,
+            args: [
+              "--disable-setuid-sandbox",
+              "--no-sandbox",
+              "--single-process",
+              "--no-zygote",
+            ],
+            executablePath:
+              process.env.NODE_ENV === "production"
+                ? process.env.PUPPETEER_EXECUTABLE_PATH
+                : puppeteer.executablePath(),
+          });
+
         this.page = await browser.newPage();
         await browser.close();
         return {successfull: "Successfull Login!"}
