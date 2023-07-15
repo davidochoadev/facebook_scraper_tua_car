@@ -16,8 +16,8 @@ export default class Search{
     
     async main (location){
         console.log(chalk.yellow("Starting Puppeteer..."))
-        try{
-        const browser = await puppeteer.launch({ headless: !0 });
+    try{
+        const browser = await puppeteer.launch({ headless: true });
         this.page = await browser.newPage();
         await browser.close();
         return {successfull: "Successfull Login!"}
