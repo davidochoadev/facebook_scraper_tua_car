@@ -1,4 +1,5 @@
 import Search from './classes/search.js'
+import Test from "./classes/test.js";
 import mysql from 'mysql'
 import util from 'util'
 import dotenv from 'dotenv'
@@ -66,8 +67,8 @@ export const scraper = async (req,res) => {
 
 export const test = async (req,res) => {
   try {
-    const search = new Search(parseInt(scrollCount), process.env.FACEBOOK_EMAIL, process.env.FACEBOOK_PASSWORD, 0);
-    const data = await search.launch();
+    const test = new Test(0);
+    const data = await test.launch();
     res.status(200).json({ok: "test is working!", data});
   }catch(err) {
     res.status(500).json({ failed : "❌ Test is not working...", err});
