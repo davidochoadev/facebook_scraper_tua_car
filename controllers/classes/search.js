@@ -23,11 +23,6 @@ export default class Search{
         await browser.close();
         return {successfull: "Successfull Login!"}
     } catch (err) {
-        fs.appendFile('error.log', err.toString(), (error) => {
-            if (error) {
-              console.error('Failed to write error to log file:', error);
-            }
-          });
           return { error: "An error occurred!", err };
     }
         this.page = await browser.newPage();
