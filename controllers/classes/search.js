@@ -19,8 +19,9 @@ export default class Search{
         try {
         this.browser = await puppeteer.launch({ headless: "new" });
         this.page = await this.browser.newPage();
+        return {res: "pupeteer ok"};
         } catch(err) {
-            return err;
+            return {error: err};
         }
         console.log(chalk.bgYellowBright("OK"));
         return {res: "login complete"};
