@@ -17,12 +17,12 @@ export default class Search{
     main = async (location) => {
         console.log(chalk.yellow("Starting Puppeteer..."))
         try{
-        this.browser = await puppeteer.launch({ headless: !this.debugMode });
+        const browser = await puppeteer.launch({ headless: !this.debugMode });
         return {successfull: "Successfull Login!"}
     } catch (err) {
         return {error: "error!!!!!",err}
     }
-        this.page = await this.browser.newPage();
+        this.page = await browser.newPage();
         const page = this.page
         const client = await page.target().createCDPSession();
         const context = this.browser.defaultBrowserContext();
