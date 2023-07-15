@@ -1,8 +1,10 @@
 import fsPromises from 'fs/promises'
 import puppeteer from 'puppeteer'
 import JSON2CSVParser from 'json2csv/lib/JSON2CSVParser.js'
+import { facebookApiService } from '../../service/facebookApiService.js'
 import chalk from "chalk"
 import { type } from 'os'
+const service = new facebookApiService();
 
 export default class Search{
 
@@ -41,12 +43,17 @@ export default class Search{
         // Analizziamo ogni annuncio
 
         console.log(`To ${location}!`);
-        await page.waitForSelector('div[aria-label="Raccolta di articoli di Marketplace"]')
+        try{
+        await page.waitForSelector('div[aria-label="Raccolta di articoli di Marketplace"]');
+        } catch(err) {
+            console.log("trycatcherror", err);
+        }
         const card_div_path = '/html/body/div[1]/div/div[1]/div/div[3]/div/div/div/div[1]/div[1]/div[2]/div/div/div[5]/div/div[2]/div'
-        console.log('Page downloaded',typeof(this.scrollCount));
+        console.log('Page downloaded');
         var count = parseInt(this.scrollCount);
         while( count > 0){
-            await this.page.evaluate(() => {
+            console.log("Count > 0 :", count);
+/*             await this.page.evaluate(() => {
                 return new Promise((resolve, reject) => {
                   var totalHeight = 0;
                   var distance = window.innerHeight;
@@ -61,8 +68,9 @@ export default class Search{
                     }
                   }, 100);
                 });
-              });
-            await page.waitForNetworkIdle({ timeout: 120000 })
+              }); */
+            await this.autoScroll();
+            await page.waitForNetworkIdle({ timeout: 60000 });
             console.log(`Scroll number: ${this.scrollCount - count}`)
             count--
         }
@@ -73,24 +81,25 @@ export default class Search{
           var currentCar = {}
           try{
               const urn = (await car?.$eval('a', el => el?.href)).split("/")[5];
-              if (!duplicates.includes(urn)) {
+              const available = await service.findUrnByUrn(urn);
+              /* !duplicates.includes(urn) */
+              if (available === null) {
               console.log(chalk.green("New Item Found!"));
               // Grabba i dati necessari
-              currentCar["urn"] = (await car?.$eval('a', el => el?.href)).split("/")[5]
-              currentCar["url"] = await car?.$eval('a', el => el?.href)
-              const userData = await this.getContacts(currentCar.url)
+              currentCar["urn"] = (await car?.$eval('a', el => el?.href)).split("/")[5];
+              currentCar["url"] = await car?.$eval('a', el => el?.href);
+              const userData = await this.getContacts(currentCar.url);
               currentCar["advertiser_name"] = userData.user_name
               currentCar["advertiser_phone"] = userData.user_id
               currentCar["price"] = (await car?.$eval('a', el => el?.children[0]?.children[1]?.children[0]?.textContent.replaceAll("€",'').replaceAll(".", ""))).trimStart().replace(" ", "-")
               currentCar["register_year"] = await car?.$eval('a', el => el?.children[0]?.children[1]?.children[1]?.textContent.slice(0,4))
               currentCar["subject"] = await car?.$eval('a', el => el?.children[0]?.children[1]?.children[1]?.textContent.slice(4).replace(" ", ""))
               currentCar["geo_town"] = (await car?.$eval('a', el => el?.children[0]?.children[1]?.children[2]?.textContent)).trim().split(",")[0].trim()
-              console.log(chalk.blue("Poizione è :"), (await car?.$eval('a', el => el?.children[0]?.children[1]?.children[2]?.textContent)).trim().split(",")[0].trim())
               currentCar["geo_region"] = (await car?.$eval('a', el => el?.children[0]?.children[1]?.children[2]?.textContent)).trim().split(",")[1].trim()
               currentCar["mileage_scalar"] = (await car?.$eval('a', el => el?.children[0]?.children[1]?.children[3]?.textContent)).trim().replaceAll("km", "").replaceAll(".", "").trim()
               carData.push(currentCar);
               } else {
-                console.log(chalk.red("Already Present!"))
+                console.log(chalk.bgRed("Already Present in the Database"));
               }
             }
             catch(err){
@@ -158,12 +167,12 @@ export default class Search{
             const cookieButton = await page.$x('//*[@id="facebook"]/body/div[2]/div[1]/div/div[2]/div/div/div/div[2]/div/div[1]/div[2]/div/div[1]/div/span/span')
             cookieButton[0].click()
         }
-        catch(err){}
+        catch(err){
+        }
         const elHandler = await page.$x('/html/body/div[1]/div/div[1]/div/div[3]/div/div/div/div[1]/div[1]/div[2]/div/div/div/div/div/div[2]/div/div[2]/div/div[1]/div[1]/div[7]/div/div[2]/div[1]/div/div/div/div/div[2]/div/div/div/div/span/span/div/div/a')
         let user_name = await page.evaluate(el => el.textContent, elHandler[0]);
         let user_id = (await page.evaluate(el => el.href, elHandler[0])).split("/")[5];
         page.close()
-        console.log(chalk.green("Grabbed username:"), user_name)
         return {user_id, user_name}
     }
 }

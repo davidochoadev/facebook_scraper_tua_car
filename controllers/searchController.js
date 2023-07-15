@@ -6,7 +6,6 @@ import chalk from "chalk";
 import { facebookApiService } from '../service/facebookApiService.js';
 import { comuneApiService } from '../service/comuneApiService.js';
 dotenv.config()
-const search = new Search(0, process.env.FACEBOOK_EMAIL, process.env.FACEBOOK_PASSWORD);
 const service = new facebookApiService();
 const comune = new comuneApiService();
 
@@ -23,7 +22,7 @@ export const scraper = async (req,res) => {
   const location = req.query.location;
   const scrollCount = req.query.scroll_count || 0
   console.log("Page is:", scrollCount)
-  const search = new Search(scrollCount, process.env.FACEBOOK_EMAIL, process.env.FACEBOOK_PASSWORD);
+  const search = new Search(parseInt(scrollCount), process.env.FACEBOOK_EMAIL, process.env.FACEBOOK_PASSWORD);
   try{
     const carsFromDb = await service.getAllFacebookCars();
     console.log("Got the following duplicates number from db: " + JSON.stringify(carsFromDb.length));
@@ -32,9 +31,10 @@ export const scraper = async (req,res) => {
     var failures = 0;
     var correct = 0;
     for (let car of data) {
-      const geo_info = await comune.getComune(car.geo_town);
+      const geo_info = await comune.getComune(car.geo_town) || "";
+      
       try {
-        await service.createFacebookCar(car.urn, car.subject, car.price, car.mileage_scalar, car.register_year, car.geo_region, geo_info.provincia, car.geo_town, car.url, car.advertiser_name, car.advertiser_phone);
+        await service.createFacebookCar(car.urn, car.subject, isNaN(car.price) ? 0 : car.price, car.mileage_scalar, car.register_year, car.geo_region, geo_info.provincia, car.geo_town, car.url, car.advertiser_name, car.advertiser_phone);
         console.log(`Element ${car.subject} added to database`);
         correct++
       }
